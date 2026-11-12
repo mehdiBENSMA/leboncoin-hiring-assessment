@@ -23,7 +23,8 @@ func NewGetAdByIDFunc(adDAO adsdao.DAO) GetAdByIDFunc {
 }
 
 func (uc getAdByID) getAdByID(ctx context.Context, id domain.AdID) (domain.Ad, error) {
-	found, err := uc.adDAO.GetAdByID(ctx, 0)
+	//GetAdByID was being called with id : 0
+	found, err := uc.adDAO.GetAdByID(ctx, id)
 	if err != nil {
 		return domain.Ad{}, fmt.Errorf("unable to get ad %s: %w", id, err)
 	}
