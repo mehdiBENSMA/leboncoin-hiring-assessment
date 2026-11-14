@@ -63,6 +63,16 @@ func (m *Mock) Begin(ctx context.Context) (adsdao.Tx, error) {
 	return m, nil
 }
 
+func (m *Mock) DeleteAd(ctx context.Context, req adsdao.DeleteAdRequest) error {
+	args := m.Called(ctx, req)
+
+	if err := args.Error(0); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Commit returns the error set on the mock.
 func (m *Mock) Commit() error {
 	return m.Called().Error(0)

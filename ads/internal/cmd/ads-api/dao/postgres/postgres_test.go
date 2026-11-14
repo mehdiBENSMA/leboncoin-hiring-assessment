@@ -179,6 +179,46 @@ func TestCreateAd(t *testing.T) {
 	})
 }
 
+func TestDeleteAd(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("use the proper id to delete ad", func(t *testing.T) {
+		adID := domain.AdID(7)
+		ownerID := domain.UserID("user-1")
+
+		dao, mock := newMockDAO(t)
+		mock.ExpectExec("DELETE").WithArgs(int64(adID)).WillReturnResult(sqlmock.NewResult(0, 1))
+
+		req := adsdao.DeleteAdRequest{
+			AdID:    adID,
+			OwnerID: ownerID,
+		}
+
+		err := dao.DeleteAd(ctx, req)
+
+		require.NoError(t, err)
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("return ErrNotFound when no row", func(t *testing.T) {
+		adID := domain.AdID(7)
+		ownerID := domain.UserID("user-1")
+
+		dao, mock := newMockDAO(t)
+		mock.ExpectExec("DELETE").WithArgs(int64(adID)).WillReturnResult(sqlmock.NewResult(0, 0))
+
+		req := adsdao.DeleteAdRequest{
+			AdID:    adID,
+			OwnerID: ownerID,
+		}
+		err := dao.DeleteAd(ctx, req)
+
+		require.Error(t, err)
+		assert.ErrorIs(t, err, adsdao.ErrNotFound)
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
 func TestTransaction(t *testing.T) {
 	ctx := context.Background()
 	req := adsdao.CreateAdRequest{

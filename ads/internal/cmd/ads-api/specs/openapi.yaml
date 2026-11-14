@@ -115,6 +115,27 @@ paths:
           description: No ad exists with this ID.
         "500":
           description: Unexpected server error.
+    delete:
+      summary: Delete an ad by ID
+      operationId: deleteId
+      tags: [ads]
+      security:
+        - userID: [ ]
+      parameters:
+        - name: adID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "204":
+          description: The ad was deleted.
+        "401":
+          description: not authenticated.
+        "500":
+          description: Unexpected server error.
 
 components:
   securitySchemes:
