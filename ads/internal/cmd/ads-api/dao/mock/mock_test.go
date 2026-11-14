@@ -101,6 +101,22 @@ func TestMock_CreateAd(t *testing.T) {
 	})
 }
 
+func TestMock_DeleteAd(t *testing.T) {
+	t.Run("returns ErrNotFound", func(t *testing.T) {
+		m := mock.New(t)
+		req := adsdao.DeleteAdRequest{
+			AdID:    1,
+			OwnerID: "user-1",
+		}
+
+		m.On("DeleteAd", ctx, req).Return(adsdao.ErrNotFound)
+		err := m.DeleteAd(ctx, req)
+
+		assert.ErrorIs(t, err, adsdao.ErrNotFound)
+
+	})
+}
+
 func TestMock_Begin(t *testing.T) {
 	t.Run("returns the mock itself as transaction", func(t *testing.T) {
 		m := mock.New(t)

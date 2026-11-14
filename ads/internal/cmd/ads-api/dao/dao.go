@@ -14,6 +14,7 @@ type Store interface {
 	GetAdByID(ctx context.Context, id domain.AdID) (domain.Ad, error)
 	// SearchAds returns all ads matching the filters.
 	SearchAds(ctx context.Context, req SearchAdsRequest) ([]domain.Ad, error)
+	DeleteAd(ctx context.Context, req DeleteAdRequest) error
 }
 
 // DAO stores and retrieves ads.
@@ -46,6 +47,11 @@ type CreateAdRequest struct {
 	PriceCents int64
 	PhotoURL   string
 	OwnerID    domain.UserID
+}
+
+type DeleteAdRequest struct {
+	AdID    domain.AdID
+	OwnerID domain.UserID
 }
 
 const (
