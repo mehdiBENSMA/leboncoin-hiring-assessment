@@ -2,9 +2,17 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	adsdao "github.mpi-internal.com/leboncoin/backend-hiring-assessment/ads/internal/cmd/ads-api/dao"
 	"github.mpi-internal.com/leboncoin/backend-hiring-assessment/ads/internal/cmd/ads-api/domain"
+	"time"
+)
+
+const MAX_ADS_PER_DAY = 5
+
+var (
+	TooManyAdErr = errors.New("too many created today, comeback tomorrow")
 )
 
 type (
@@ -30,6 +38,30 @@ func NewCreateAdFunc(adDAO adsdao.DAO) CreateAdFunc {
 }
 
 func (uc createAd) createAd(ctx context.Context, req CreateAdRequest) (domain.AdID, error) {
+
+	now := time.Now()
+	todayAtMidnight := time.Date(
+		now.Year(),
+		now.Month(),
+		now.Day(),
+		0, 0, 0, 0,
+		now.Location(),
+	)
+	search := adsdao.SearchAdsRequest{
+		CreatedAfter:  todayAtMidnight,
+		CreatedBefore: now,
+	}
+
+	existingAds, err := uc.adDAO.SearchAds(ctx, search)
+
+	if err != nil {
+		return 0, fmt.Errorf("searching ads: %w", err)
+	}
+
+	if len(existingAds) > MAX_ADS_PER_DAY {
+		return 0, TooManyAdErr
+	}
+
 	adID, err := uc.adDAO.CreateAd(ctx, adsdao.CreateAdRequest{
 		Title:    req.Title,
 		Price:    req.Price,

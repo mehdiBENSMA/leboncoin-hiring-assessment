@@ -116,13 +116,18 @@ func (d *DAO) SearchAds(ctx context.Context, req adsdao.SearchAdsRequest) ([]dom
 		WHERE ($1 = '' OR user_id::text = $1)
 		  AND ($2 = 0 OR price_cents >= $2)
 		  AND ($3 = 0 OR price_cents <= $3)
-		  AND ($4 = '' OR title ILIKE '%' || $4 || '%')`
+		  AND ($4 = '' OR title ILIKE '%' || $4 || '%')
+          AND $5 < created_at
+		  AND $6 > created_at
+`
 
 	rows, err := d.runner().QueryContext(ctx, query,
 		req.OwnerID,
 		req.MinPriceCents,
 		req.MaxPriceCents,
 		req.Title,
+		req.CreatedAfter,
+		req.CreatedBefore,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to search ads: %w", err)

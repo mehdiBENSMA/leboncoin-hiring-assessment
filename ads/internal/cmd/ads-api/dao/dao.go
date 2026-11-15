@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+	"time"
 
 	"github.mpi-internal.com/leboncoin/backend-hiring-assessment/ads/internal/cmd/ads-api/domain"
 )
@@ -38,6 +39,8 @@ type SearchAdsRequest struct {
 	OwnerID       domain.UserID
 	MinPriceCents int64
 	MaxPriceCents int64
+	CreatedBefore time.Time
+	CreatedAfter  time.Time
 	Title         string
 }
 
