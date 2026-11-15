@@ -34,6 +34,16 @@ func handlerImportAds(importAds usecase.ImportAdsFunc) http.HandlerFunc {
 			})
 		}
 
+		if len(ads) == 0 {
+			rw.Header().Set("Content-Type", "application/json")
+			rw.WriteHeader(http.StatusCreated)
+
+			_ = json.NewEncoder(rw).Encode(importAdsResponse{
+				IDs: []int64{},
+			})
+			return
+		}
+
 		adIDS, err := importAds(r.Context(), usecase.ImportAdsRequest{
 			Ads:     ads,
 			OwnerId: domain.UserID(middleware.UserIDFromRequest(r)),
