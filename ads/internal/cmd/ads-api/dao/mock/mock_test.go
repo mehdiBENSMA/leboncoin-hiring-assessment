@@ -70,10 +70,10 @@ func TestMock_CreateAd(t *testing.T) {
 	t.Run("returns generated ID", func(t *testing.T) {
 		m := mock.New(t)
 		req := adsdao.CreateAdRequest{
-			Title:      "bike",
-			PriceCents: 5000,
-			PhotoURL:   "https://example.com/bike.jpg",
-			OwnerID:    "user-1",
+			Title:    "bike",
+			Price:    50.0,
+			PhotoURL: "https://example.com/bike.jpg",
+			OwnerID:  "user-1",
 		}
 
 		m.On("CreateAd", ctx, req).Return(domain.AdID(7), nil)
@@ -87,10 +87,10 @@ func TestMock_CreateAd(t *testing.T) {
 	t.Run("returns ErrUnknownOwner when owner does not exist", func(t *testing.T) {
 		m := mock.New(t)
 		req := adsdao.CreateAdRequest{
-			Title:      "bike",
-			PriceCents: 5000,
-			PhotoURL:   "https://example.com/bike.jpg",
-			OwnerID:    "ghost",
+			Title:    "bike",
+			Price:    50.0,
+			PhotoURL: "https://example.com/bike.jpg",
+			OwnerID:  "ghost",
 		}
 
 		m.On("CreateAd", ctx, req).Return(domain.AdID(0), adsdao.ErrUnknownOwner)
