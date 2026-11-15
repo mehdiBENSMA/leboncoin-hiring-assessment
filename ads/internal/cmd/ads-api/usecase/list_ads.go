@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
 
 	adsdao "github.mpi-internal.com/leboncoin/backend-hiring-assessment/ads/internal/cmd/ads-api/dao"
 	"github.mpi-internal.com/leboncoin/backend-hiring-assessment/ads/internal/cmd/ads-api/domain"
@@ -17,6 +18,8 @@ type (
 		OwnerID       domain.UserID
 		MinPriceCents int64
 		MaxPriceCents int64
+		CreatedBefore time.Time
+		CreatedAfter  time.Time
 		Title         string
 	}
 
