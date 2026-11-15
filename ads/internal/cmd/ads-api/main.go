@@ -33,10 +33,11 @@ func run() error {
 	}()
 
 	router := http.NewRouter(http.Usecases{
-		CreateAd: usecase.NewCreateAdFunc(adDAO),
-		GetAd:    usecase.NewGetAdByIDFunc(adDAO),
-		ListAds:  usecase.NewListAdsFunc(adDAO),
-		DeleteAd: usecase.NewDeleteAdFunc(adDAO),
+		CreateAd:  usecase.NewCreateAdFunc(adDAO),
+		GetAd:     usecase.NewGetAdByIDFunc(adDAO),
+		ListAds:   usecase.NewListAdsFunc(adDAO),
+		DeleteAd:  usecase.NewDeleteAdFunc(adDAO),
+		ImportAds: usecase.NewImportAdsFunc(adDAO),
 	})
 
 	return httpserver.Run(ctx, cfg.HTTPAddr, router)
