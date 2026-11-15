@@ -26,8 +26,8 @@ func TestHandlerListAds(t *testing.T) {
 
 	t.Run("returns 200 with ads JSON on success", func(t *testing.T) {
 		ads := []domain.Ad{
-			{ID: 1, Title: "bike", Price: 5000, PhotoURL: "https://example.com/bike.jpg", UserID: "user-1", CreatedAt: createdAt},
-			{ID: 2, Title: "scooter", Price: 12000, PhotoURL: "https://example.com/scooter.jpg", UserID: "user-2", CreatedAt: createdAt},
+			{ID: 1, Title: "bike", Price: 50, PhotoURL: "https://example.com/bike.jpg", UserID: "user-1", CreatedAt: createdAt},
+			{ID: 2, Title: "scooter", Price: 120, PhotoURL: "https://example.com/scooter.jpg", UserID: "user-2", CreatedAt: createdAt},
 		}
 		srv := newListAdsServer(func(_ context.Context, _ usecase.ListAdsRequest) ([]domain.Ad, error) {
 			return ads, nil
@@ -46,7 +46,7 @@ func TestHandlerListAds(t *testing.T) {
 		require.Len(t, got.Ads, 2)
 		assert.Equal(t, int64(1), got.Ads[0].ID)
 		assert.Equal(t, "bike", got.Ads[0].Title)
-		assert.Equal(t, int64(5000), got.Ads[0].PriceCents)
+		assert.Equal(t, float64(50), got.Ads[0].Price)
 		assert.Equal(t, int64(2), got.Ads[1].ID)
 	})
 

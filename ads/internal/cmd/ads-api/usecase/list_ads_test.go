@@ -20,8 +20,8 @@ func TestListAds(t *testing.T) {
 		t.Run("returns all matching ads", func(t *testing.T) {
 			m := mock.New(t)
 			want := []domain.Ad{
-				{ID: 1, Title: "bike", Price: 5000, UserID: "user-1"},
-				{ID: 2, Title: "scooter", Price: 12000, UserID: "user-2"},
+				{ID: 1, Title: "bike", Price: 50.0, UserID: "user-1"},
+				{ID: 2, Title: "scooter", Price: 120.0, UserID: "user-2"},
 			}
 			req := adsdao.SearchAdsRequest{Title: "bike"}
 			m.On("SearchAds", ctx, req).Return(want, nil)

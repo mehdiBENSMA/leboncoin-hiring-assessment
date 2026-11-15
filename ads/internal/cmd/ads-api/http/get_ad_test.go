@@ -28,12 +28,13 @@ func TestHandlerGetAd(t *testing.T) {
 
 	t.Run("returns 200 with ad JSON on success", func(t *testing.T) {
 		ad := domain.Ad{
-			ID:        42,
-			Title:     "mountain bike",
-			Price:     15000,
-			PhotoURL:  "https://example.com/bike.jpg",
-			UserID:    "user-1",
-			CreatedAt: createdAt,
+			ID:         42,
+			Title:      "mountain bike",
+			PriceCents: 15000,
+			Price:      150.0,
+			PhotoURL:   "https://example.com/bike.jpg",
+			UserID:     "user-1",
+			CreatedAt:  createdAt,
 		}
 		srv := newGetAdServer(func(_ context.Context, id domain.AdID) (domain.Ad, error) {
 			return ad, nil
@@ -51,7 +52,7 @@ func TestHandlerGetAd(t *testing.T) {
 		require.NoError(t, json.NewDecoder(resp.Body).Decode(&got))
 		assert.Equal(t, int64(42), got.ID)
 		assert.Equal(t, "mountain bike", got.Title)
-		assert.Equal(t, int64(15000), got.PriceCents)
+		assert.Equal(t, float64(150), got.Price)
 		assert.Equal(t, "https://example.com/bike.jpg", got.PhotoURL)
 		assert.Equal(t, "user-1", got.UserID)
 		assert.Equal(t, createdAt, got.CreatedAt)

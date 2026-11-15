@@ -30,10 +30,10 @@ func handlerImportAds(createAd usecase.CreateAdFunc) http.HandlerFunc {
 
 		for _, item := range body.Ads {
 			adID, err := createAd(r.Context(), usecase.CreateAdRequest{
-				Title:      item.Title,
-				PriceCents: item.PriceCents,
-				PhotoURL:   item.PhotoURL,
-				OwnerID:    ownerID,
+				Title:    item.Title,
+				Price:    item.Price,
+				PhotoURL: item.PhotoURL,
+				OwnerID:  ownerID,
 			})
 			if err != nil {
 				rw.WriteHeader(http.StatusInternalServerError)

@@ -17,16 +17,16 @@ func TestCreateAd(t *testing.T) {
 	ctx := context.Background()
 
 	ucReq := usecase.CreateAdRequest{
-		Title:      "mountain bike",
-		PriceCents: 15000,
-		PhotoURL:   "https://example.com/bike.jpg",
-		OwnerID:    "user-1",
+		Title:    "mountain bike",
+		Price:    150.0,
+		PhotoURL: "https://example.com/bike.jpg",
+		OwnerID:  "user-1",
 	}
 	daoReq := adsdao.CreateAdRequest{
-		Title:      "mountain bike",
-		PriceCents: 15000,
-		PhotoURL:   "https://example.com/bike.jpg",
-		OwnerID:    "user-1",
+		Title:    "mountain bike",
+		Price:    150.0,
+		PhotoURL: "https://example.com/bike.jpg",
+		OwnerID:  "user-1",
 	}
 
 	t.Run("nominal", func(t *testing.T) {

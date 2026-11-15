@@ -43,10 +43,10 @@ type SearchAdsRequest struct {
 
 // CreateAdRequest carries the data needed to create an ad.
 type CreateAdRequest struct {
-	Title      string
-	PriceCents int64
-	PhotoURL   string
-	OwnerID    domain.UserID
+	Title    string
+	Price    float64
+	PhotoURL string
+	OwnerID  domain.UserID
 }
 
 type DeleteAdRequest struct {
