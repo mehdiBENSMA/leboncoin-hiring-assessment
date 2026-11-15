@@ -93,7 +93,8 @@ func TestGetAdByID(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, domain.AdID(42), got.ID)
 		assert.Equal(t, "mountain bike", got.Title)
-		assert.Equal(t, int64(15000), got.Price)
+		assert.Equal(t, int64(15000), got.PriceCents)
+		assert.Equal(t, float64(150), got.Price)
 		assert.Equal(t, domain.UserID("user-1"), got.UserID)
 		assert.Equal(t, createdAt, got.CreatedAt)
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -130,16 +131,16 @@ func TestGetAdByID(t *testing.T) {
 func TestCreateAd(t *testing.T) {
 	ctx := context.Background()
 	req := adsdao.CreateAdRequest{
-		Title:      "mountain bike",
-		PriceCents: 15000,
-		PhotoURL:   "https://example.com/bike.jpg",
-		OwnerID:    "user-1",
+		Title:    "mountain bike",
+		Price:    150.00,
+		PhotoURL: "https://example.com/bike.jpg",
+		OwnerID:  "user-1",
 	}
 
 	t.Run("returns generated ID on success", func(t *testing.T) {
 		dao, mock := newMockDAO(t)
 		mock.ExpectQuery("INSERT").
-			WithArgs(req.Title, req.PriceCents, req.PhotoURL, string(req.OwnerID)).
+			WithArgs(req.Title, 15000, req.PhotoURL, string(req.OwnerID)).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(int64(7)))
 
 		got, err := dao.CreateAd(ctx, req)
@@ -153,7 +154,7 @@ func TestCreateAd(t *testing.T) {
 		dao, mock := newMockDAO(t)
 		pgErr := &pgconn.PgError{Code: "23503"}
 		mock.ExpectQuery("INSERT").
-			WithArgs(req.Title, req.PriceCents, req.PhotoURL, string(req.OwnerID)).
+			WithArgs(req.Title, 15000, req.PhotoURL, string(req.OwnerID)).
 			WillReturnError(pgErr)
 
 		_, err := dao.CreateAd(ctx, req)
@@ -167,7 +168,7 @@ func TestCreateAd(t *testing.T) {
 		dao, mock := newMockDAO(t)
 		boom := errors.New("db down")
 		mock.ExpectQuery("INSERT").
-			WithArgs(req.Title, req.PriceCents, req.PhotoURL, string(req.OwnerID)).
+			WithArgs(req.Title, 15000, req.PhotoURL, string(req.OwnerID)).
 			WillReturnError(boom)
 
 		_, err := dao.CreateAd(ctx, req)
@@ -222,20 +223,20 @@ func TestDeleteAd(t *testing.T) {
 func TestTransaction(t *testing.T) {
 	ctx := context.Background()
 	req := adsdao.CreateAdRequest{
-		Title:      "mountain bike",
-		PriceCents: 15000,
-		PhotoURL:   "https://example.com/bike.jpg",
-		OwnerID:    "user-1",
+		Title:    "mountain bike",
+		Price:    150.00,
+		PhotoURL: "https://example.com/bike.jpg",
+		OwnerID:  "user-1",
 	}
 
 	t.Run("commits every call made on the transaction", func(t *testing.T) {
 		dao, mock := newMockDAO(t)
 		mock.ExpectBegin()
 		mock.ExpectQuery("INSERT").
-			WithArgs(req.Title, req.PriceCents, req.PhotoURL, string(req.OwnerID)).
+			WithArgs(req.Title, 15000, req.PhotoURL, string(req.OwnerID)).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(int64(1)))
 		mock.ExpectQuery("INSERT").
-			WithArgs(req.Title, req.PriceCents, req.PhotoURL, string(req.OwnerID)).
+			WithArgs(req.Title, 15000, req.PhotoURL, string(req.OwnerID)).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(int64(2)))
 		mock.ExpectCommit()
 
@@ -257,7 +258,7 @@ func TestTransaction(t *testing.T) {
 		dao, mock := newMockDAO(t)
 		mock.ExpectBegin()
 		mock.ExpectQuery("INSERT").
-			WithArgs(req.Title, req.PriceCents, req.PhotoURL, string(req.OwnerID)).
+			WithArgs(req.Title, 15000, req.PhotoURL, string(req.OwnerID)).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(int64(1)))
 		mock.ExpectRollback()
 

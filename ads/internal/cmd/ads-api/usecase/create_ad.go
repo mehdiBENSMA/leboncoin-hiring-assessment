@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-
 	adsdao "github.mpi-internal.com/leboncoin/backend-hiring-assessment/ads/internal/cmd/ads-api/dao"
 	"github.mpi-internal.com/leboncoin/backend-hiring-assessment/ads/internal/cmd/ads-api/domain"
 )
@@ -14,10 +13,10 @@ type (
 
 	// CreateAdRequest describes the ad to create. OwnerID is the authenticated user: a caller can never create an ad on behalf of someone else.
 	CreateAdRequest struct {
-		Title      string
-		PriceCents int64
-		PhotoURL   string
-		OwnerID    domain.UserID
+		Title    string
+		Price    float64
+		PhotoURL string
+		OwnerID  domain.UserID
 	}
 
 	createAd struct {
@@ -32,10 +31,10 @@ func NewCreateAdFunc(adDAO adsdao.DAO) CreateAdFunc {
 
 func (uc createAd) createAd(ctx context.Context, req CreateAdRequest) (domain.AdID, error) {
 	adID, err := uc.adDAO.CreateAd(ctx, adsdao.CreateAdRequest{
-		Title:      req.Title,
-		PriceCents: req.PriceCents,
-		PhotoURL:   req.PhotoURL,
-		OwnerID:    req.OwnerID,
+		Title:    req.Title,
+		Price:    req.Price,
+		PhotoURL: req.PhotoURL,
+		OwnerID:  req.OwnerID,
 	})
 	if err != nil {
 		return 0, fmt.Errorf("unable to create ad: %w", err)

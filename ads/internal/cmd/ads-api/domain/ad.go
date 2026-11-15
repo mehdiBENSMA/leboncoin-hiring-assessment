@@ -15,12 +15,13 @@ type AdID int64
 
 // Ad is a classified ad published by a user.
 type Ad struct {
-	ID        AdID
-	Title     string
-	Price     int64
-	PhotoURL  string
-	UserID    UserID
-	CreatedAt time.Time
+	ID         AdID
+	Title      string
+	Price      float64
+	PriceCents int64
+	PhotoURL   string
+	UserID     UserID
+	CreatedAt  time.Time
 }
 
 // String returns the decimal representation of the identifier.

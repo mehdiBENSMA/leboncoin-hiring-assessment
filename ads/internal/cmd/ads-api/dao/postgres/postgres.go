@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.mpi-internal.com/leboncoin/backend-hiring-assessment/common/money"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgconn"
@@ -131,8 +132,13 @@ func (d *DAO) SearchAds(ctx context.Context, req adsdao.SearchAdsRequest) ([]dom
 	var ads []domain.Ad
 	for rows.Next() {
 		var ad domain.Ad
-		if err := rows.Scan(&ad.ID, &ad.Title, &ad.Price, &ad.PhotoURL, &ad.UserID, &ad.CreatedAt); err != nil {
+		if err := rows.Scan(&ad.ID, &ad.Title, &ad.PriceCents, &ad.PhotoURL, &ad.UserID, &ad.CreatedAt); err != nil {
 			return nil, fmt.Errorf("unable to scan ad: %w", err)
+		}
+
+		ad.Price, err = money.ToMajorUnit(ad.PriceCents)
+		if err != nil {
+			return nil, fmt.Errorf("unable to convert price cents: %w", err)
 		}
 
 		ads = append(ads, ad)
@@ -164,8 +170,13 @@ func (d *DAO) CreateAd(ctx context.Context, req adsdao.CreateAdRequest) (domain.
 		VALUES ($1, $2, $3, $4::uuid)
 		RETURNING id`
 
+	priceInCents, err := money.ToMinorUnit(req.Price)
+	if err != nil {
+		return 0, fmt.Errorf("unable to parse price: %w", err)
+	}
+
 	var id domain.AdID
-	err := d.runner().QueryRowContext(ctx, query, req.Title, req.PriceCents, req.PhotoURL, string(req.OwnerID)).Scan(&id)
+	err = d.runner().QueryRowContext(ctx, query, req.Title, priceInCents, req.PhotoURL, string(req.OwnerID)).Scan(&id)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
@@ -199,7 +210,7 @@ func (d *DAO) DeleteAd(ctx context.Context, req adsdao.DeleteAdRequest) error {
 
 func scanAd(row *sql.Row) (domain.Ad, error) {
 	var ad domain.Ad
-	if err := row.Scan(&ad.ID, &ad.Title, &ad.Price, &ad.PhotoURL, &ad.UserID, &ad.CreatedAt); err != nil {
+	if err := row.Scan(&ad.ID, &ad.Title, &ad.PriceCents, &ad.PhotoURL, &ad.UserID, &ad.CreatedAt); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return domain.Ad{}, adsdao.ErrNotFound
 		}
@@ -207,5 +218,11 @@ func scanAd(row *sql.Row) (domain.Ad, error) {
 		return domain.Ad{}, err
 	}
 
+	priceInMajorUnit, err := money.ToMajorUnit(ad.PriceCents)
+	if err != nil {
+		return domain.Ad{}, err
+	}
+
+	ad.Price = priceInMajorUnit
 	return ad, nil
 }
